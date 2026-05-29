@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { 
   Home, Landmark, ChevronRight, Loader2, 
   BarChart3, Settings as SettingsIcon, LogOut, User 
@@ -6,10 +6,9 @@ import {
 import { supabase } from '../lib/supabase';
 import { useNavigate } from 'react-router-dom';
 
-// Import sub-components
-import FinancialStatus from './finacialstatus'; 
-import Settings from './settings'; 
-import FinancialChart from './financialchart';
+const FinancialStatus = lazy(() => import('./finacialstatus'));
+const Settings = lazy(() => import('./settings'));
+const FinancialChart = lazy(() => import('./financialchart'));
 
 interface Transaction {
   id: string;
@@ -155,9 +154,13 @@ export default function DashboardPage() {
               </div>
             </section>
           ) : activeTab === 'status' ? (
-            <FinancialStatus bank_transactions={bank_transactions} />
+            <Suspense fallback={<div className="flex justify-center py-20"><Loader2 className="animate-spin text-slate-400" /></div>}>
+              <FinancialStatus bank_transactions={bank_transactions} />
+            </Suspense>
           ) : activeTab === 'chart' ? (
-            <FinancialChart bank_transactions={bank_transactions} />
+            <Suspense fallback={<div className="flex justify-center py-20"><Loader2 className="animate-spin text-slate-400" /></div>}>
+              <FinancialChart bank_transactions={bank_transactions} />
+            </Suspense>
           ) : activeTab === 'bank' ? (
             <section className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                <h2 className="text-3xl font-bold mb-8 text-slate-900">Partner Banks</h2>
@@ -180,7 +183,9 @@ export default function DashboardPage() {
                </div>
             </section>
           ) : (
-            <Settings />
+            <Suspense fallback={<div className="flex justify-center py-20"><Loader2 className="animate-spin text-slate-400" /></div>}>
+              <Settings />
+            </Suspense>
           )}
         </div>
       </main>
