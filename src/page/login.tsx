@@ -1,7 +1,7 @@
-import React, { useState, type FormEvent } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-// Ensure this path matches your actual file structure
-import { supabase } from '../lib/supabase'; 
+import { supabase } from '../lib/supabase';
+import { useAuth } from '../lib/AuthContext';
 import TermsModal from '../component/Termsmodal';
 
 export default function LoginPage() {
@@ -12,6 +12,11 @@ export default function LoginPage() {
   const [showTerms, setShowTerms] = useState<boolean>(false);
 
   const navigate = useNavigate();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (user) navigate('/dashboard', { replace: true });
+  }, [user, navigate]);
 
   // FIX: Added FormEvent type for the submit handler
   async function handleLogin(e: FormEvent<HTMLFormElement>) {

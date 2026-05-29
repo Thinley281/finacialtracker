@@ -7,9 +7,10 @@
 //  • Sign up with Google
 //  • Links to Terms of Service and Privacy Policy modals
 // ─────────────────────────────────────────────────────────────────────────────
-import { useState, type FormEvent } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import { useAuth } from '../lib/AuthContext';
 import TermsModal from '../component/Termsmodal';
 
 export default function RegisterPage() {
@@ -25,6 +26,11 @@ export default function RegisterPage() {
   const [showTerms, setShowTerms] = useState(false);
 
   const navigate = useNavigate();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (user) navigate('/dashboard', { replace: true });
+  }, [user, navigate]);
 
   // ── handlers ────────────────────────────────────────────────────────────────
 
@@ -68,7 +74,7 @@ export default function RegisterPage() {
   async function handleGoogleSignUp() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: window.location.origin + '/dashboard' },
+      options: { redirectTo: `${window.location.origin}/dashboard` },
     });
     if (error) setError(error.message);
   }
